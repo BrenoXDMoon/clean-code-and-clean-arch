@@ -37,7 +37,7 @@ function extractCheckDigit (cpf: string) {
 }
 
 export async function signup (input: any): Promise<any> {
-	const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
+	const connection = getConnection();
 	try {
 		const accountId = crypto.randomUUID();
 		const [account] = await connection.query("select * from cccat14.account where email = $1", [input.email]);
@@ -68,8 +68,13 @@ function isInvalidCarPlate (carPlate: string) {
 }
 
 export async function getAccount (accountId: string) {
-	const connection = pgp()("postgres://postgres:123456@localhost:5432/app");
+	const connection = getConnection();
 	const [account] = await connection.query("select * from cccat14.account where account_id = $1", [accountId]);
 	await connection.$pool.end();
 	return account;
+}
+
+//TODO: validar conforme o progresso das aulas a necessidade de mover essa criação de conexão para outro arquivo
+function getConnection(){
+	return pgp()("root://root:1234@localhost:5432/app-clean-arch");
 }
